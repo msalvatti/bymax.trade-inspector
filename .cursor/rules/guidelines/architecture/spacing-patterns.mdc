@@ -1,0 +1,101 @@
+---
+description: Layout spacing patterns using parent containers and gap properties. Use when creating component layouts, managing spacing between elements, or implementing responsive designs. Don't use for internal component padding or text-specific spacing.
+applyTo: '**/*.tsx'
+---
+
+# Spacing & Layout Patterns
+
+## Core Principle: Parent-Managed Spacing
+
+Use parent containers with gap properties instead of individual component margins. This creates more maintainable and consistent layouts.
+
+## Spacing Guidelines
+
+### ✅ DO: Use Parent Gap
+
+```tsx
+// Parent manages spacing between children
+<View className="flex-col gap-4">
+  <Component1 />
+  <Component2 />
+  <Component3 />
+</View>
+
+// Horizontal spacing
+<View className="flex-row gap-3">
+  <Button />
+  <Button />
+</View>
+```
+
+### ❌ DON'T: Use Component Margins
+
+```tsx
+// Avoid margins on individual components
+<Component1 className="mb-4" />
+<Component2 className="mb-4" />
+<Component3 />
+```
+
+## Common Spacing Patterns
+
+### Page Layout
+
+```tsx
+<View className="flex-1 px-6">
+  <View className="flex-1 gap-6">
+    {/* Content sections with consistent spacing */}
+  </View>
+</View>
+```
+
+### Form Layout
+
+```tsx
+<View className="gap-4">
+  <Input />
+  <Input />
+  <Button />
+</View>
+```
+
+### Card Grid
+
+```tsx
+<View className="flex-row gap-3">
+  <View className="flex-1">
+    <Card />
+  </View>
+  <View className="flex-1">
+    <Card />
+  </View>
+</View>
+```
+
+## Spacing Scale Reference
+
+Use Tailwind's spacing scale consistently:
+
+- `gap-1` = 4px
+- `gap-2` = 8px
+- `gap-3` = 12px
+- `gap-4` = 16px
+- `gap-5` = 20px
+- `gap-6` = 24px
+- `gap-8` = 32px
+- `gap-10` = 40px
+
+## Component Design Rules
+
+1. **Components should have zero external margins**
+2. **Use padding for internal spacing only**
+3. **Let parent containers control spacing between components**
+4. **Exception: Utility classes for one-off adjustments**
+
+## Benefits
+
+- **Consistency**: Same gap value for all children
+- **Flexibility**: Easy to adjust spacing in one place
+- **Maintainability**: Components are spacing-agnostic
+- **Reusability**: Components work in any layout context
+

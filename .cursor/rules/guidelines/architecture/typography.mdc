@@ -1,0 +1,113 @@
+---
+applyTo: '**/*.tsx'
+description: Guidelines for adding texts, labels, and typography in the application.
+---
+
+# Typography Rules for Nine98 App
+
+## 🎯 Core Rule
+
+**ALWAYS use Typography component** - Never use raw `<Text>` from React Native.
+
+```typescript
+import { Typography } from '@/shared/components/Typography';
+```
+
+## 📝 Quick Reference
+
+### Text Hierarchy
+
+| Use Case      | Component              | Default Styling                  |
+| ------------- | ---------------------- | -------------------------------- |
+| Screen Title  | `<Typography.H1>`      | `text-2xl font-bold`             |
+| Section Title | `<Typography.H2>`      | `text-xl font-bold`              |
+| Subsection    | `<Typography.H3>`      | `text-lg font-bold`              |
+| Card Title    | `<Typography.H4>`      | `text-base font-bold`            |
+| Body Text     | `<Typography.Body>`    | `text-base`                      |
+| Small Text    | `<Typography.Small>`   | `text-sm` + `secondary`          |
+| Caption       | `<Typography.Caption>` | `text-xs` + `secondary`          |
+| Form Label    | `<Typography.Label>`   | `text-sm font-medium` + `normal` |
+| Helper Text   | `<Typography.Helper>`  | `text-xs` + `secondary`          |
+| Error         | `<Typography.Error>`   | `text-xs` + `error`              |
+| Success       | `<Typography.Success>` | `text-xs` + `success`            |
+
+### Color Variants
+
+Use `variant` prop for semantic colors:
+
+- `primary` (default) - Main text color
+- `secondary` - Muted/secondary text
+- `normal` - Normal emphasis
+- `error`, `success`, `warning`, `info` - Status colors
+- `tint` - Accent color
+
+## ✅ DO's
+
+```typescript
+// Screen title with spacing
+<Typography.H1 className="mb-6">Profile</Typography.H1>
+
+// Secondary text
+<Typography.Body variant="secondary">Last updated 2 hours ago</Typography.Body>
+
+// Form pattern
+<Typography.Label className="mb-1">Email</Typography.Label>
+<TextInput />
+<Typography.Helper className="mt-1">We'll never share your email</Typography.Helper>
+
+// Status messages
+{error && <Typography.Error className="mt-2">{error}</Typography.Error>}
+```
+
+## ❌ DON'Ts
+
+```typescript
+// WRONG - Raw Text
+<Text>Don't use this</Text>
+
+// WRONG - Inline styles
+<Typography.Body style={{ color: 'red' }}>No inline styles</Typography.Body>
+
+// WRONG - Hardcoded colors
+<Typography.Body className="text-red-500">Use variants instead</Typography.Body>
+```
+
+## 🎨 Common Patterns
+
+### Card
+
+```typescript
+<View className="bg-surface rounded-lg p-4">
+  <Typography.H4 className="mb-1">Title</Typography.H4>
+  <Typography.Body variant="secondary">Description</Typography.Body>
+</View>
+```
+
+### Empty State
+
+```typescript
+<View className="flex-1 items-center justify-center p-8">
+  <Typography.H3 className="mb-2">No data</Typography.H3>
+  <Typography.Body variant="secondary" className="text-center">
+    Get started by adding your first item
+  </Typography.Body>
+</View>
+```
+
+### List Item
+
+```typescript
+<View className="py-3 border-b border-border">
+  <Typography.Body className="font-semibold">Item Title</Typography.Body>
+  <Typography.Small variant="secondary">Subtitle</Typography.Small>
+</View>
+```
+
+## 🚀 Quick Checklist
+
+1. Import from `@/shared/components/Typography`
+2. Choose correct component (H1-H6, Body, Label, etc.)
+3. Use `variant` for colors, not hardcoded values
+4. Use `className` for spacing/alignment, not `style`
+5. Add `mb-` classes for vertical rhythm
+

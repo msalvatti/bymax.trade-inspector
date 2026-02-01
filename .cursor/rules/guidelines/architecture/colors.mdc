@@ -1,0 +1,237 @@
+---
+description: Color system and semantic color usage guidelines. Use for all color-related decisions, theme-aware color selection, and status colors. Don't use for typography, spacing, or component structure.
+applyTo: '**/*.tsx'
+---
+
+# Color System Rules for Nine98 App
+
+## Core Principle
+
+**NEVER hardcode colors. Always use semantic classes from `global.css`.**
+
+## Semantic Color Classes (Auto-adapt to light/dark themes)
+
+### Text Colors
+
+- `text-text` - Primary text (gray-900)
+- `text-text-secondary` - Secondary/muted text (gray-500)
+- `text-text-normal` - Normal text (gray-700)
+- `text-text-contrast` - Contrast text (gray-600)
+- `text-icon` - Icon color (gray-500)
+- `text-tint` - Accent/highlight (primary-500)
+- `text-primary` - Brand color (primary-700)
+
+### Background Colors
+
+- `bg-background` - Main background (white)
+- `bg-background-gray` - Gray background (gray-50/gray-100)
+- `bg-surface` - Card/container background (white)
+- `bg-text-contrast` - Contrast background (gray-200)
+- `bg-primary` - Brand background (primary-700)
+
+### Border Colors
+
+- `border-border` - Default borders (gray-200)
+- `border-primary` - Primary borders (primary-700)
+
+## Status Colors
+
+### Base Status Colors
+
+- Success: `*-success` (#12b76a)
+- Error: `*-error` (#f04438)
+- Warning: `*-warning` (#f79009)
+- Info: `*-info` (primary-500)
+
+### Status Color Scales
+
+Available scales from 10-100 for nuanced designs:
+
+- Success: `*-success-10` through `*-success-100`
+- Error: `*-error-10` through `*-error-100`
+- Warning: `*-warning-10` through `*-warning-100`
+
+### Light Status Backgrounds (Legacy)
+
+- `bg-success-light` (success-10), `border-success-light` (success-20)
+- `bg-error-light` (error-10), `border-error-light` (error-20)
+- `bg-warning-light` (warning-10), `border-warning-light` (warning-20)
+- `bg-info-light` (primary-100), `border-info-light` (primary-200)
+
+## Color Scales
+
+### Primary Scale
+
+`*-primary-50` through `*-primary-950`
+
+### Gray Scale
+
+`*-gray-50` through `*-gray-900`
+
+## Alternative Colors
+
+### Hot Gold
+
+- `*-hot-gold-100`, `*-hot-gold-200`
+
+### Cyan
+
+- `*-cyan`
+
+### Tier Colors
+
+- Gold: `*-tier-gold-100` through `*-tier-gold-500`
+- Silver: `*-tier-silver-100` through `*-tier-silver-400`
+- Bronze: `*-tier-bronze-100` through `*-tier-bronze-400`
+
+## Usage Examples
+
+### Buttons
+
+```tsx
+// Primary button
+<Pressable className="bg-primary px-4 py-2 rounded-lg">
+  <Typography variant="button" className="text-white">Primary</Typography>
+</Pressable>
+
+// Secondary button
+<Pressable className="bg-surface border border-border px-4 py-2 rounded-lg">
+  <Typography variant="button">Secondary</Typography>
+</Pressable>
+
+// Danger button
+<Pressable className="bg-error px-4 py-2 rounded-lg">
+  <Typography variant="button" className="text-white">Delete</Typography>
+</Pressable>
+```
+
+### Cards & Containers
+
+```tsx
+// Main card
+<View className="bg-surface border border-border rounded-lg p-4">
+  {/* Content */}
+</View>
+
+// Gray background section
+<View className="bg-background-gray p-4">
+  {/* Content */}
+</View>
+
+// Elevated card
+<View className="bg-surface border border-border rounded-lg p-4 shadow-sm">
+  {/* Content */}
+</View>
+```
+
+### Status Messages
+
+```tsx
+// Success
+<View className="bg-success-10 border border-success-20 rounded-lg p-3">
+  <Typography color="success">Success message</Typography>
+</View>
+
+// Error
+<View className="bg-error-10 border border-error-20 rounded-lg p-3">
+  <Typography color="error">Error message</Typography>
+</View>
+
+// Warning
+<View className="bg-warning-10 border border-warning-20 rounded-lg p-3">
+  <Typography color="warning">Warning message</Typography>
+</View>
+
+// Info
+<View className="bg-primary-100 border border-primary-200 rounded-lg p-3">
+  <Typography color="info">Info message</Typography>
+</View>
+```
+
+### Form States
+
+```tsx
+// Default input
+<TextInput
+  className="bg-surface border border-border rounded-lg px-3 py-2 text-text"
+  placeholderTextColor="rgba(100, 116, 139, 0.6)"
+/>
+
+// Focused input
+<TextInput
+  className={twMerge(
+    "bg-surface border rounded-lg px-3 py-2 text-text",
+    isFocused ? "border-primary" : "border-border"
+  )}
+/>
+
+// Error state
+<TextInput
+  className="bg-surface border border-error rounded-lg px-3 py-2 text-text"
+/>
+```
+
+## Color Violations to Avoid
+
+### ❌ NEVER Use
+
+```tsx
+// Hex colors
+className="text-[#2d489a]"
+style={{ color: '#000000' }}
+
+// RGB/RGBA
+style={{ backgroundColor: 'rgb(255, 255, 255)' }}
+
+// Non-semantic Tailwind
+className="bg-blue-500 text-gray-700"
+
+// Dark mode prefixes
+className="dark:bg-gray-900 dark:text-white"
+
+// Arbitrary values
+className="bg-[#f3f4f6]"
+```
+
+### ✅ ALWAYS Use
+
+```tsx
+// Semantic classes
+className = 'bg-background text-text';
+className = 'bg-surface border-border';
+className = 'text-success bg-success-10';
+className = 'bg-primary-100 text-primary-700';
+```
+
+## Common Color Mappings
+
+| Instead of        | Use                             |
+| ----------------- | ------------------------------- |
+| `bg-white`        | `bg-background` or `bg-surface` |
+| `bg-gray-50`      | `bg-background-gray`            |
+| `text-gray-900`   | `text-text`                     |
+| `text-gray-500`   | `text-text-secondary`           |
+| `text-gray-700`   | `text-text-normal`              |
+| `border-gray-200` | `border-border`                 |
+| `bg-blue-600`     | `bg-primary`                    |
+| `text-green-600`  | `text-success`                  |
+| `text-red-600`    | `text-error`                    |
+| `text-yellow-600` | `text-warning`                  |
+
+## Theme Support Rules
+
+1. **Semantic colors auto-adapt** - No manual theme switching needed
+2. **Never use `dark:` prefix** - Semantic colors handle it
+3. **Trust the system** - CSS custom properties manage themes
+4. **Stay semantic** - Use color names that describe purpose, not appearance
+
+## Quick Reference Checklist
+
+1. ✅ Use only semantic color classes from global.css
+2. ✅ Let CSS custom properties handle theme switching
+3. ✅ Use full color scales (10-100) for nuanced designs
+4. ✅ Apply status colors for user feedback
+5. ❌ Never hardcode hex/rgb colors
+6. ❌ Never use dark: prefixes
+7. ❌ Never use non-semantic Tailwind colors
+

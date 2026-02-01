@@ -1,0 +1,1 @@
+use @commit-messages.mdc to generate a commit message

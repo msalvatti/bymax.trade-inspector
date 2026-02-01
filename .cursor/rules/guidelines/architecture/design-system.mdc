@@ -1,0 +1,249 @@
+---
+description: Design system overview and orchestration for UI work. Delegates specifics to colors, typography, spacing, and icon rules. Don't use for business logic.
+applyTo: "**/*.tsx"
+---
+
+# App Design System & Style Guide
+
+## Theme System Overview
+
+This project uses a comprehensive design system with CSS custom properties for theming and NativeWind for React Native styling. Use semantic Tailwind classes that automatically adapt to light/dark themes via CSS custom properties.
+
+### Related Rules
+  
+- [Colors](colors.mdc)
+- [Typography](typography.mdc)
+- [Spacing](spacing-patterns.mdc)
+- [Icons](icon-usage.mdc)
+
+## Color System
+
+For complete guidance, see [colors.mdc](colors.mdc). Use only semantic classes from [global.css](/global.css). Do not hardcode hex/rgb. Do not use `dark:`.
+
+## NativeWind & Styling
+
+### Design System Approach
+
+Use semantic classes and the `Typography` components rather than raw `Text`. Avoid `dark:` variants; theme switching is automatic.
+
+```tsx
+<View className="flex-1 bg-background px-4 py-6">
+  <View className="bg-surface border border-border rounded-lg p-4">
+    <Typography.H4 className="mb-1">Title</Typography.H4>
+    <Typography.Body variant="secondary">Description</Typography.Body>
+  </View>
+</View>
+```
+
+### Styling Best Practices
+
+- Use NativeWind's `className` for consistency
+- Create reusable styled components for common patterns
+- Theme support is automatic via semantic classes (no `dark:`)
+- Use Tailwind's spacing scale and `gap-*` on parents
+- Use `twMerge(variantClass, className)` to compose classes
+
+## UI Component Guidelines
+
+### Typography
+
+Use `Typography` components. See [typography.mdc](typography.mdc).
+
+```tsx
+<Typography.H1 className="mb-6">Heading</Typography.H1>
+<Typography.H2>Subheading</Typography.H2>
+<Typography.Body>Body text</Typography.Body>
+<Typography.Small variant="secondary">Caption</Typography.Small>
+```
+
+### Buttons
+
+```tsx
+// Primary button
+<Pressable className="bg-primary px-4 py-2 rounded-lg">
+  <Typography.Body className="text-white font-medium">Primary Button</Typography.Body>
+</Pressable>
+
+// Secondary button
+<Pressable className="bg-surface border border-border px-4 py-2 rounded-lg">
+  <Typography.Body className="font-medium">Secondary Button</Typography.Body>
+</Pressable>
+
+// Danger button
+<Pressable className="bg-error px-4 py-2 rounded-lg">
+  <Typography.Body className="text-white font-medium">Danger Button</Typography.Body>
+</Pressable>
+```
+
+### Cards & Containers
+
+```tsx
+// Main card container
+<View className="bg-surface border border-border rounded-lg p-4">
+  {/* Card content */}
+</View>
+
+// Background container
+<View className="bg-background flex-1">
+  {/* Background content */}
+</View>
+
+// Elevated card
+<View className="bg-surface border border-border rounded-lg p-4 shadow-sm">
+  {/* Elevated content */}
+</View>
+```
+
+### Form Elements
+
+```tsx
+// Label + input + helper
+<Typography.Label className="mb-1">Email</Typography.Label>
+<TextInput className="bg-surface border border-border rounded-lg px-3 py-2 text-text" />
+<Typography.Helper className="mt-1">We'll never share your email</Typography.Helper>
+
+// Focus and error states: see colors.mdc
+```
+
+### States & Feedback
+
+```tsx
+<View className="bg-success-10 border border-success-20 rounded-lg p-3">
+  <Typography.Success>Success message</Typography.Success>
+</View>
+
+<View className="bg-error-10 border border-error-20 rounded-lg p-3">
+  <Typography.Error>Error message</Typography.Error>
+</View>
+
+<View className="bg-warning-10 border border-warning-20 rounded-lg p-3">
+  <Typography.Body variant="warning">Warning message</Typography.Body>
+</View>
+
+<View className="bg-primary-100 border border-primary-200 rounded-lg p-3">
+  <Typography.Body variant="info">Info message</Typography.Body>
+</View>
+```
+
+### Layout & Spacing
+
+Use parent-managed spacing with `gap-*` per [spacing-patterns.mdc](spacing-patterns.mdc). Avoid external margins on children.
+
+```tsx
+<View className="flex-col gap-4">
+  <Card />
+  <Card />
+  <Button />
+</View>
+```
+
+## Component Patterns
+
+### Screen Layout
+
+```tsx
+<SafeAreaView className="flex-1 bg-background">
+  <View className="flex-1 px-4 py-6 gap-6">
+    <Typography.H1>Screen Title</Typography.H1>
+    {/* Content */}
+  </View>
+</SafeAreaView>
+```
+
+### List Items
+
+```tsx
+<View className="bg-surface border border-border rounded-lg p-4">
+  <Typography.Body className="font-semibold">Item Title</Typography.Body>
+  <Typography.Small variant="secondary">Item description</Typography.Small>
+</View>
+```
+
+### Modal/Sheet
+
+```tsx
+<View className="bg-surface rounded-t-xl p-6 border-t border-border gap-4">
+  <Typography.H3>Modal Title</Typography.H3>
+  {/* Modal content */}
+</View>
+```
+
+## Rules for AI Generation
+
+1. Use semantic color classes only; see [colors.mdc](colors.mdc)
+2. Theme-agnostic design; do not use `dark:`
+3. Use `Typography.*`; see [typography.mdc](typography.mdc)
+4. Parent-managed spacing with `gap-*`; see [spacing-patterns.mdc](spacing-patterns.mdc)
+5. Icons via FontAwesome; see [icon-usage.mdc](icon-usage.mdc)
+6. Components presentational; business logic in hooks/services
+
+## Automated Design System Compliance
+
+### AI Code Review Rules
+
+When reviewing or modifying any code, ALWAYS perform these automated checks:
+
+1. **Color Violation Detection**:
+
+   - Scan for arbitrary color values (e.g., `#ffffff`, `rgb(255,255,255)`, non-semantic Tailwind colors)
+   - Flag any non-semantic color usage
+   - Suggest semantic replacements using defined classes
+
+2. **Semantic Class Usage**:
+
+   - Ensure semantic color classes are used for all styling
+   - Verify classes match those defined in [global.css](mdc:global.css)
+   - Check that no hardcoded colors are used in className or style
+
+3. **Typography Consistency**:
+   - Verify text colors use semantic classes (`text-text`, `text-text-secondary`)
+   - Check for consistent font weights and sizes
+   - Ensure proper semantic color classes are used
+
+### Automatic Suggestions
+
+When violations are found, provide:
+
+1. **Specific line-by-line fixes** using semantic classes
+2. **Semantic color class replacements** from [global.css](mdc:global.css)
+3. **Updated className attributes** with proper semantic classes
+4. **Removal of hardcoded colors** and style props with colors
+
+### Before/After Examples
+
+Always show:
+
+```typescript
+// ❌ VIOLATION DETECTED
+className="bg-purple-600 text-gray-800"
+style={{ backgroundColor: '#ffffff', color: '#000000' }}
+
+// ✅ CORRECTED
+className="bg-primary text-text"
+```
+
+### Proactive Validation
+
+- **Auto-scan** any code changes for design system compliance
+- **Suggest improvements** even if not explicitly asked
+- **Warn about** hardcoded colors, non-semantic classes
+- **Recommend** semantic alternatives automatically
+
+## Testing Theme Switching
+
+Components should automatically adapt to light/dark via semantic classes. No `dark:` variants.
+
+## Examples to Avoid
+
+❌ `style={{ color: '#000000' }}`
+❌ `style={{ backgroundColor: '#ffffff' }}`
+❌ `className="bg-blue-500 text-gray-800"`
+❌ Raw `<Text>` instead of `Typography`
+
+## Examples to Follow
+
+✅ `className="text-text"`
+✅ `className="bg-primary"`
+✅ `className="border-border bg-surface text-text"`
+✅ `className="bg-success-10 border-success-20"`
+

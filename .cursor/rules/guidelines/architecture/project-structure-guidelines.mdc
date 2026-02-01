@@ -1,0 +1,360 @@
+---
+description: This document defines the architectural principles and folder structure for the project. It provides a comprehensive guide for organizing code by business domain, ensuring clean architecture, and maintaining scalability through strict separation of concerns.
+applyTo: '**'
+---
+# Project Structure Guidelines
+
+## Objective
+
+This document defines the architectural principles and folder structure for the project. It provides a comprehensive guide for organizing code by business domain, ensuring clean architecture, and maintaining scalability through strict separation of concerns.
+
+## Part 1: Core Architectural Principles
+
+Seven fundamental principles that define the architecture:
+
+### 1. Domain-Driven Structure (Screaming Architecture)
+
+- **Organization**: By business functionality, not technical layers
+- **Location**: All domains live in `src/domains/`
+- **Purpose**: The folder structure immediately reveals what the application does
+- **Examples**: `game/`, `player/`, `payments/`
+
+### 2. Clean Architecture & Dependency Inversion
+
+- **Layered Design**: Inner layers (domain) are unaware of outer layers (UI, frameworks)
+- **Abstraction Rule**: External communications use interfaces/types
+- **Dependencies Flow**: Inward only - frameworks depend on domain, never vice versa
+- **External Services**: Always accessed through repository abstractions
+
+### 3. Logic Layer Separation
+
+**Domain Logic**
+
+- Pure, framework-agnostic functions
+- Operates on domain objects defined in `/model/`
+- Implemented in `/services/` directories
+
+**Application Logic**
+
+- Use case orchestration
+- Business validations
+- Located in `/services/` directories
+
+**View Logic**
+
+- React components and JSX
+- Framework hooks (useState, useEffect)
+- Location: Views live in Expo Router route files under `./app/`.
+- Domain-specific UI building blocks (non-route components) still live inside each domain/use case under `/components/`.
+
+### 4. Functional Programming Paradigm
+
+- **Mandate**: Functions over classes
+- **Benefits**: No hidden state, improved predictability
+- **Implementation**: Pure functions, immutable data structures
+- **Exceptions**: None - all new code must follow functional patterns
+
+### 5. Explicit Module Imports
+
+- **Prohibition**: No `index.ts` barrel files for re-exports
+- **Import Style**: Direct file imports only
+- **Path Aliases**: Required (e.g., `@/src/domains/game/services/gameService`)
+- **Benefits**: Prevents circular dependencies, improves IDE performance
+
+### 6. Adapters as Integration Layer
+
+- **Role**: Bridge between Views (Expo Router) and Domain/Application Services
+- **Location**: `/adapters/` directories inside each use case
+- **Form**: Prefer functional hooks (e.g., `useCreateGameAdapter`) and pure functions
+- **Responsibilities**:
+  - Managing UI-facing state and effects
+  - Calling application services and mapping to view-friendly data
+  - Handling user interactions and side-effects
+  - Isolating framework concerns away from domain services
+
+### 7. Naming Conventions
+
+- **Folders**: camelCase (e.g., `useCases`, `createGame`)
+- **Files**: camelCase (e.g., `gameService.ts`, `useCreateGameAdapter.ts`)
+- **React Components**: PascalCase (e.g., `CreateGameView.tsx`, `GameCard.tsx`)
+- **Domain Models (interfaces)**: No `Interface` suffix; filename matches domain noun (e.g., `game.ts` exporting `interface Game`)
+- **Consistency**: Mandatory across entire codebase
+
+### 8. Expo Router Integration
+
+- **Framework**: Built on Expo project with expo-router
+- **Route Files**: Located in `./app/` directory following expo-router conventions
+- **Pattern**: Route files implement the View (screen) directly and use domain adapters and components
+- **Example**: For `/forgot-password` route, the route file contains the view and uses an adapter from the domain:
+
+  ```tsx
+  // ./app/(public)/forgot-password.tsx
+  import { useRecoverPasswordAdapter } from '@/src/domains/auth/useCases/recoverPassword/adapters/useRecoverPasswordAdapter';
+  import { PasswordResetForm } from '@/src/domains/auth/useCases/recoverPassword/components/PasswordResetForm';
+
+  export default function ForgotPasswordScreen() {
+    const adapter = useRecoverPasswordAdapter();
+    return <PasswordResetForm onSubmit={adapter.submit} isLoading={adapter.isLoading} error={adapter.error} />;
+  }
+  ```
+
+- **Separation**: Views (screens) live in routing (app folder). Domains remain framework-agnostic; they expose adapters and domain-specific components.
+
+## Part 2: Directory Structure
+
+### Domain Modules (`/src/domains/`)
+
+Each domain is a self-contained module with standardized sub-directories:
+
+#### `/model/`
+
+- **Purpose**: Domain model interfaces only
+- **Contents**: Pure business entity definitions
+- **Examples**: `game.ts`, `player.ts`, `score.ts`
+- **Naming**: Do not use the "Interface" suffix; use domain nouns (e.g., `Game`, `Player`)
+- **Note**: Constants, types, and utilities belong in use case folders or shared
+
+#### `/useCases/`
+
+- **Purpose**: Feature-specific implementations
+- **Organization**: One folder per use case
+- **Naming**: Descriptive action names (e.g., `createGame`, `updatePlayer`)
+
+##### Use Case Structure
+
+Each use case folder contains:
+
+**`/components/`**
+
+- UI components specific to this use case
+- Not shared with other features
+- Example: `GameFormSection.tsx`
+
+**`/adapters/`**
+
+- Hooks/functions that connect views to services
+- Bridge between (Expo) views and domain/application logic
+- Example: `useCreateGameAdapter.ts`
+
+**`/services/`**
+
+- Business logic implementation
+- Use case orchestration
+- Example: `createGameService.ts`, `validateGameRules.ts`
+
+**`/repositories/`**
+
+- Data access abstractions
+- API clients and adapters
+- Example: `gameRepository.ts`, `gameApiAdapter.ts`
+
+**`/dtos/`**
+
+- Data Transfer Objects
+- API request/response types
+- Example: `createGameDto.ts`
+
+**`/types/`** (optional)
+
+- Use case-specific types and constants
+- Enums and type definitions
+- Example: `gameConstants.ts`, `gameTypes.ts`
+
+### Shared Module (`/src/shared/`)
+
+Cross-cutting concerns and truly generic code:
+
+#### `/components/`
+
+- **Purpose**: Reusable UI components
+- **Examples**: `Button.tsx`, `Input.tsx`, `Modal.tsx`
+
+#### `/providers/`
+
+- **Purpose**: Global React Context providers
+- **Examples**: `DependenciesProvider.tsx`, `ThemeProvider.tsx`
+
+#### `/utils/`
+
+- **Purpose**: Generic utility functions
+- **Examples**: `dateFormatter.ts`, `validation.ts`
+
+#### `/hooks/`
+
+- **Purpose**: Generic custom hooks
+- **Examples**: `useScreenSize.ts`, `useDebounce.ts`
+
+#### `/types/`
+
+- **Purpose**: Shared TypeScript types
+- **Examples**: `apiTypes.ts`, `commonTypes.ts`
+
+## Part 3: Complete Project Structure Example
+
+```text
+expo/
+├── app/
+│   ├── (public)/
+│   │   ├── forgot-password.tsx
+│   │   └── sign-in.tsx
+│   └── (private)/
+│       ├── dashboard.tsx
+│       └── profile.tsx
+src/
+├── domains/
+│   ├── game/
+│   │   ├── model/
+│   │   │   ├── game.ts
+│   │   │   ├── playerGame.ts
+│   │   │   └── score.ts
+│   │   └── useCases/
+│   │       ├── createGame/
+│   │       │   ├── components/
+│   │       │   │   ├── GameSettingsForm.tsx
+│   │       │   │   └── PlayerSelector.tsx
+│   │       │   ├── adapters/
+│   │       │   │   └── useCreateGameAdapter.ts
+│   │       │   ├── services/
+│   │       │   │   ├── createGameService.ts
+│   │       │   │   └── validateGameSettings.ts
+│   │       │   ├── repositories/
+│   │       │   │   ├── gameRepository.ts
+│   │       │   │   └── gameApiAdapter.ts
+│   │       │   ├── dtos/
+│   │       │   │   ├── createGameRequestDto.ts
+│   │       │   │   └── createGameResponseDto.ts
+│   │       │   └── types/
+│   │       │       ├── gameConstants.ts
+│   │       │       └── validationTypes.ts
+│   │       ├── updateGame/
+│   │       │   ├── components/
+│   │       │   ├── adapters/
+│   │       │   ├── adapters/
+│   │       │   ├── services/
+│   │       │   ├── repositories/
+│   │       │   └── dtos/
+│   │       └── listGames/
+│   │           ├── components/
+│   │           │   ├── GameCard.tsx
+│   │           │   └── GamesFilter.tsx
+│   │           ├── adapters/
+│   │           │   └── useGamesListAdapter.ts
+│   │           ├── services/
+│   │           │   └── fetchGamesService.ts
+│   │           └── repositories/
+│   │               └── gamesListRepository.ts
+│   ├── player/
+│   │   ├── model/
+│   │   │   ├── player.ts
+│   │   │   └── playerProfile.ts
+│   │   └── useCases/
+│   │       ├── registerPlayer/
+│   │       │   ├── components/
+│   │       │   ├── adapters/
+│   │       │   ├── services/
+│   │       │   └── repositories/
+│   │       └── updateProfile/
+│   │           ├── components/
+│   │           ├── adapters/
+│   │           ├── services/
+│   │           └── repositories/
+│   └── payments/
+│       ├── model/
+│       │   ├── payment.ts
+│       │   └── transaction.ts
+│       └── useCases/
+│           └── processPayment/
+│               ├── components/
+│               ├── adapters/
+│               ├── services/
+│               └── repositories/
+└── shared/
+    ├── components/
+    │   ├── Button.tsx
+    │   ├── Input.tsx
+    │   ├── Card.tsx
+    │   └── Modal.tsx
+    ├── providers/
+    │   ├── DependenciesProvider.tsx
+    │   └── ThemeProvider.tsx
+    ├── hooks/
+    │   ├── useScreenSize.ts
+    │   ├── useDebounce.ts
+    │   └── useLocalStorage.ts
+    ├── utils/
+    │   ├── dateFormatter.ts
+    │   ├── validation.ts
+    │   └── apiClient.ts
+    └── types/
+        ├── apiTypes.ts
+        └── commonTypes.ts
+```
+
+## Part 4: Implementation Guidelines
+
+### Creating a New Domain
+
+1. Create domain folder in `/src/domains/`
+2. Add `/model/` directory with interfaces and types
+3. Create `/useCases/` directory for features
+
+### Adding a Use Case
+
+1. Create descriptive folder in domain's `/useCases/`
+2. Add required subdirectories (components, adapters, services, repositories, dtos)
+3. Implement the adapter hook in `/adapters/`
+4. Build domain-specific components in `/components/`
+5. Create services for business logic
+6. Define repository interfaces and implementations
+7. Create or update the corresponding route file in `./app/` that implements the view and uses the adapter and components
+
+### Expo Router Integration Pattern
+
+When creating routes for your use cases:
+
+1. **Route File Location**: Place in `./app/` following expo-router conventions
+2. **File Naming**: Match the desired URL path (e.g., `forgot-password.tsx` for `/forgot-password`)
+3. **Content**: Implement the View (screen) within the route file; import and use domain adapters and components
+4. **Example Structure**:
+  - Adapter: `@/src/domains/auth/useCases/recoverPassword/adapters/useRecoverPasswordAdapter`
+  - Component: `@/src/domains/auth/useCases/recoverPassword/components/PasswordResetForm`
+  - Route file: `./app/(public)/forgot-password.tsx` renders the component and uses the adapter
+
+### Domain Model vs. Use Case Types
+
+**Domain Model (`/model/`)**
+
+- Only pure domain entity interfaces
+- Represents core business objects
+- Framework-agnostic, business-focused
+
+**Use Case Types (`/useCases/[useCase]/types/`)**
+
+- Feature-specific types and constants
+- Validation schemas
+- Enums and utility types
+- Implementation details
+
+### Data Flow
+
+1. **User Interaction** → View Component (in `./app/`)
+2. **View Component** → Adapter Hook (in domain `/adapters/`)
+3. **Adapter** → Service Layer
+4. **Service Layer** → Repository
+5. **Repository** → External API/Database
+6. **Response** → Flows back through layers
+
+### Import Examples
+
+```typescript
+// Good - Direct imports with path aliases
+import { createGameService } from '@/src/domains/game/useCases/createGame/services/createGameService';
+import { useCreateGameAdapter } from '@/src/domains/game/useCases/createGame/adapters/useCreateGameAdapter';
+import { GameSettingsForm } from '@/src/domains/game/useCases/createGame/components/GameSettingsForm';
+import type { Game } from '@/src/domains/game/model/game';
+
+// Bad - Barrel imports
+import { createGameService } from '@/src/domains/game/useCases/createGame/services';
+import { GameSettingsForm } from '@/src/domains/game/useCases/createGame/components';
+```
+

@@ -1,0 +1,154 @@
+# ============================================
+# Dependencies
+# ============================================
+node_modules/
+.pnpm-store/
+
+# ============================================
+# Environment Variables
+# ============================================
+.env
+.env.local
+.env.*.local
+
+# ============================================
+# Build Outputs
+# ============================================
+dist/
+build/
+out/
+.next/
+.nuxt/
+.turbo/
+
+# ============================================
+# TypeScript
+# ============================================
+*.tsbuildinfo
+next-env.d.ts
+
+# TypeScript compiled files (should only be in dist/)
+**/*.js
+**/*.js.map
+**/*.d.ts
+!**/dist/**/*.js
+!**/dist/**/*.js.map
+!**/dist/**/*.d.ts
+!**/node_modules/**/*.js
+!**/node_modules/**/*.js.map
+!**/node_modules/**/*.d.ts
+# Allow config files in root
+!next.config.js
+!eslint.config.js
+!postcss.config.js
+
+# ============================================
+# Testing & Coverage
+# ============================================
+coverage/
+coverage.json
+.nyc_output
+
+# ============================================
+# Logs
+# ============================================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ============================================
+# Cache Directories
+# ============================================
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+.fusebox/
+
+# ============================================
+# Package Manager Files
+# ============================================
+package-lock.json
+yarn.lock
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.yarn-integrity
+.pnp.*
+.npm
+
+# ============================================
+# IDEs and Editors
+# ============================================
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode-test
+
+# ============================================
+# OS Generated Files
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ============================================
+# Runtime & Temporary Files
+# ============================================
+pids
+*.pid
+*.pid.lock
+*.seed
+tmp/
+temp/
+
+# ============================================
+# Deployment & Services
+# ============================================
+.vercel
+.serverless/
+.dynamodb/
+
+# ============================================
+# Project Specific
+# ============================================
+
+# Prisma generated files (binary artifacts)
+**/dist/**/*.node
+**/dist/**/*.wasm
+**/prisma/migrations/**/migration.sql.bak
+
+# ============================================
+# Legacy/Unused (kept for compatibility)
+# ============================================
+# These are rarely used but kept to avoid issues
+bower_components/
+jspm_packages/
+web_modules/
+.grunt/
+.lock-wscript
+build/Release
+.node_repl_history
+*.tgz
+.tern-port
+vuepress/dist/
+cache/

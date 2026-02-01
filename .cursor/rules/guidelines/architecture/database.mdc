@@ -1,0 +1,307 @@
+---
+description: Database schema and migrations design guidelines
+applyTo: '**/*.sql, **/migrations/**'
+---
+
+# Database Design Principles
+
+## General Guidelines
+
+1. **Normalization**: Ensure the database schema is normalized to reduce data redundancy and improve data integrity.
+2. **Indexing**: Use indexing strategically to improve query performance, especially on large tables.
+3. **Foreign Keys**: Define foreign key relationships to enforce data integrity between related tables.
+4. **Naming Conventions**: Use consistent naming conventions for tables, columns, and indexes to improve readability and maintainability.
+5. **Migration Scripts**: Always create migration scripts for schema changes to ensure a clear history of changes and easy rollback if needed. Use comments and descriptive names for migrations to convey their purpose.
+
+## Naming Conventions
+
+1. **Table Names**: Use plural nouns for table names (e.g., `users`, `orders`, `games`, `users_profiles`, `users_followers`).
+2. **Column Names**: Use snake_case for column names (e.g., `first_name`, `last_name`).
+3. **Index Names**: Use the format `idx_table_column` for index names (e.g., `idx_users_email`).
+
+**SQL Examples**:
+
+```sql
+-- Normalization example (unnormalized -> normalized)
+-- Bad: orders_flat stores user info and comma-separated product ids
+CREATE TABLE orders_flat (
+   order_id uuid PRIMARY KEY,
+   user_id uuid,
+   user_first_name text,
+   user_last_name text,
+   shipping_address text,
+   product_ids text, -- comma-separated list (bad)
+   total_amount numeric
+);
+
+-- Good: normalized into users, orders, order_items
+CREATE TABLE users (
+   id uuid PRIMARY KEY,
+   first_name text NOT NULL,
+   last_name text NOT NULL,
+   email text NOT NULL UNIQUE
+);
+
+CREATE TABLE orders (
+   id uuid PRIMARY KEY,
+   user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+   placed_at timestamptz NOT NULL DEFAULT now(),
+   total_amount numeric NOT NULL
+);
+
+CREATE TABLE order_items (
+   id uuid PRIMARY KEY,
+   order_id uuid NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+   product_id uuid NOT NULL,
+   quantity int NOT NULL CHECK (quantity > 0),
+   unit_price numeric NOT NULL
+);
+
+-- Indexing examples
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_orders_user_placed_at ON orders(user_id, placed_at DESC);
+CREATE INDEX idx_orders_recent ON orders(placed_at) WHERE placed_at > now() - interval '30 days';
+CREATE INDEX idx_users_email_lower ON users (lower(email));
+
+-- Foreign key examples (named constraints)
+ALTER TABLE orders
+   ADD CONSTRAINT fk_orders_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+
+ALTER TABLE posts
+   ADD COLUMN author_id uuid,
+   ADD CONSTRAINT fk_posts_author FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE SET NULL;
+
+-- Naming conventions example
+CREATE TABLE users_profiles (
+   user_id uuid PRIMARY KEY REFERENCES users(id),
+   bio text,
+   display_name text
+);
+
+CREATE INDEX idx_users_profiles_display_name ON users_profiles(display_name);
+```
+
+## Data Integrity
+
+1. **Constraints**: Use constraints (e.g., NOT NULL, UNIQUE) to enforce data integrity at the database level.
+   - Document the purpose of each constraint in the schema.
+   - Include examples of valid and invalid data for each constraint.
+   - Specify the actions to be taken when a constraint is violated (e.g., error messages, logging).
+   - Include tests to verify that constraints are enforced.
+2. **Validation**: Implement validation rules in the application layer to ensure data integrity before it reaches the database.
+3. **Referential Integrity**: Use foreign keys to maintain referential integrity between related tables.
+
+**SQL Examples**:
+
+```sql
+-- NOT NULL and UNIQUE constraint example
+CREATE TABLE teams (
+   id uuid PRIMARY KEY,
+   name text NOT NULL UNIQUE,
+   created_at timestamptz NOT NULL DEFAULT now()
+);
+
+-- CHECK constraint example
+CREATE TABLE transactions (
+   id uuid PRIMARY KEY,
+   amount numeric NOT NULL CHECK (amount >= 0),
+   status text NOT NULL CHECK (status IN ('pending', 'completed', 'failed'))
+);
+
+-- DEFAULT example
+CREATE TABLE invites (
+   id uuid PRIMARY KEY,
+   code text NOT NULL UNIQUE,
+   is_used boolean NOT NULL DEFAULT false
+);
+
+-- Examples (valid / invalid):
+-- 1) Negative amount will fail:
+-- INSERT INTO transactions (id, amount, status) VALUES (gen_random_uuid(), -10, 'pending'); -- fails CHECK
+-- 2) Duplicate team name will fail UNIQUE constraint.
+```
+
+## ERD Guidelines
+
+1. **Entity Representation**: Each table should represent a single entity or concept.
+2. **Attribute Naming**: Use clear and descriptive names for table columns to convey their purpose.
+3. **Relationships**: Clearly define relationships between entities using foreign keys and join tables where necessary. Use prefixes to indicate the source of the relationship (e.g., `user_id` for relationships to the `users` table) and when naming table to represent the relationship (e.g., `users_followers` for a table linking users and their followers, `events_participants` for a table linking events and their participants).
+4. **Documentation**: Include comments and documentation within the ERD to explain complex relationships or business logic.
+
+**SQL Examples (ERD / many-to-many)**:
+
+```sql
+-- Events and participants (many-to-many) example
+CREATE TABLE events (
+   id uuid PRIMARY KEY,
+   name text NOT NULL,
+   start_at timestamptz
+);
+
+CREATE TABLE participants (
+   id uuid PRIMARY KEY,
+   user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE events_participants (
+   event_id uuid NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+   participant_id uuid NOT NULL REFERENCES participants(id) ON DELETE CASCADE,
+   registered_at timestamptz NOT NULL DEFAULT now(),
+   role text DEFAULT 'attendee',
+   PRIMARY KEY (event_id, participant_id)
+);
+
+-- Query: list event participants with roles
+SELECT e.id AS event_id, e.name, p.user_id, ep.role
+FROM events e
+JOIN events_participants ep ON ep.event_id = e.id
+JOIN participants p ON p.id = ep.participant_id
+WHERE e.id = $1;
+```
+
+## Migration Guidelines (Supabase)
+
+Do not generate migration files manually, always use the Supabase CLI!
+
+1. **Migration Files**: Use migration files to define schema changes. Each migration should be a single, atomic change.
+2. **Descriptive Names**: Name migration files descriptively to convey their purpose (e.g., `add_user_followers_table.sql`).
+3. **Reversible Migrations**: Ensure migrations are reversible, allowing for easy rollback if needed.
+4. **Testing Migrations**: Test migrations in a staging environment before applying them to production.
+5. **Data Migrations**: For large data migrations, consider using background jobs or batch processing to minimize impact on performance.
+6. **Seeding data**: Do not include seeding data in migration files. Use separate seed files and scripts to populate the database with initial data WHEN ASKED FOR, or when absolutely necessary (e.g. a new table with fixed options for a dropdown, etc.).
+
+-- Example migration (reversible pattern, Supabase-friendly)
+
+```sql
+-- 20250824_add_users_and_orders.sql
+BEGIN;
+
+-- create users
+CREATE TABLE IF NOT EXISTS users (
+   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+   email text NOT NULL UNIQUE,
+   created_at timestamptz NOT NULL DEFAULT now()
+);
+
+-- create orders
+CREATE TABLE IF NOT EXISTS orders (
+   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+   user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+   placed_at timestamptz NOT NULL DEFAULT now(),
+   total_amount numeric NOT NULL
+);
+
+COMMIT;
+
+-- Rollback snippet (put in migration down or use as manual rollback):
+-- DROP TABLE IF EXISTS orders;
+-- DROP TABLE IF EXISTS users;
+```
+
+Notes:
+
+- Prefer one atomic change per migration file. Use a deterministic filename prefix (YYYYMMDD[_seq]\_description.sql).
+- Avoid embedding environment-specific values or secrets in migrations.
+- Test migrations locally or on a staging branch before applying to production.
+
+## Data Integrity
+
+1. **Constraints**: Use constraints (e.g., NOT NULL, UNIQUE) to enforce data integrity at the database level.
+   - Document the purpose of each constraint in the schema.
+   - Include examples of valid and invalid data for each constraint.
+   - Specify the actions to be taken when a constraint is violated (e.g., error messages, logging).
+   - Include tests to verify that constraints are enforced.
+2. **Validation**: Implement validation rules in the application layer to ensure data integrity before it reaches the database.
+3. **Referential Integrity**: Use foreign keys to maintain referential integrity between related tables.
+
+**SQL Examples**:
+
+```sql
+
+-- NOT NULL and UNIQUE constraint example
+CREATE TABLE teams (
+   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+   name text NOT NULL UNIQUE,
+   created_at timestamptz NOT NULL DEFAULT now()
+);
+
+-- CHECK constraint example
+CREATE TABLE transactions (
+   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+   amount numeric NOT NULL CHECK (amount >= 0),
+   status text NOT NULL CHECK (status IN ('pending', 'completed', 'failed'))
+);
+
+-- Referential integrity example (FKs)
+CREATE TABLE users (
+   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+   email text NOT NULL UNIQUE
+);
+
+CREATE TABLE orders (
+   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+   user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+   placed_at timestamptz NOT NULL DEFAULT now(),
+   total_amount numeric NOT NULL CHECK (total_amount >= 0)
+);
+
+-- Example of using a domain for simple validation
+CREATE DOMAIN positive_int AS int CHECK (VALUE > 0);
+
+CREATE TABLE product_inventory (
+   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+   product_id uuid NOT NULL,
+   quantity positive_int NOT NULL DEFAULT 0
+);
+
+-- Simple trigger example to keep an audit (optional)
+CREATE TABLE audit_log (
+   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+   table_name text NOT NULL,
+   operation text NOT NULL,
+   changed_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE OR REPLACE FUNCTION log_change() RETURNS trigger AS $$
+BEGIN
+   INSERT INTO audit_log(table_name, operation) VALUES (TG_TABLE_NAME, TG_OP);
+   RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_orders_change
+AFTER INSERT OR UPDATE OR DELETE ON orders
+FOR EACH ROW EXECUTE FUNCTION log_change();
+
+-- Quick examples (valid / invalid inserts):
+-- Valid team
+-- INSERT INTO teams (name) VALUES ('Red Dragons');
+
+-- Invalid team (NULL name) -> fails NOT NULL
+-- INSERT INTO teams (name) VALUES (NULL);
+
+-- Invalid transaction (negative amount) -> fails CHECK
+-- INSERT INTO transactions (amount, status) VALUES (-5, 'pending');
+
+-- Valid order insertion (requires existing user)
+-- INSERT INTO users (email) VALUES ('alice@example.com');
+-- INSERT INTO orders (user_id, total_amount) VALUES ((SELECT id FROM users WHERE email='alice@example.com'), 100.0);
+
+-- Validation note: prefer to keep business validation in the application layer and use DB constraints as last line of defense.
+```
+
+## ERD Guidelines
+
+1. **Entity Representation**: Each table should represent a single entity or concept.
+2. **Attribute Naming**: Use clear and descriptive names for table columns to convey their purpose.
+3. **Relationships**: Clearly define relationships between entities using foreign keys and join tables where necessary. Use prefixes to indicate the source of the relationship (e.g., `user_id` for relationships to the `users` table) and when naming table to represent the relationship (e.g., `users_followers` for a table linking users and their followers, `events_participants` for a table linking events and their participants).
+4. **Documentation**: Include comments and documentation within the ERD to explain complex relationships or business logic.
+
+## Migration Guidelines (Supabase)
+
+1. **Migration Files**: Use migration files to define schema changes. Each migration should be a single, atomic change.
+2. **Descriptive Names**: Name migration files descriptively to convey their purpose (e.g., `add_user_followers_table.sql`).
+3. **Reversible Migrations**: Ensure migrations are reversible, allowing for easy rollback if needed.
+4. **Testing Migrations**: Test migrations in a staging environment before applying them to production.
+5. **Data Migrations**: For large data migrations, consider using background jobs or batch processing to minimize impact on performance.
+6. **Seeding data**: Do not include seeding data in migration files. Use separate seed files and scripts to populate the database with initial data WHEN ASKED FOR, or when absolutely necessary (e.g. a new table with fixed options for a dropdown, etc.).

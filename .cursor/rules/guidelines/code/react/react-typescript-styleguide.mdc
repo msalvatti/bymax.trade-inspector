@@ -1,0 +1,45 @@
+---
+applyTo: "**/*.ts, **/*.tsx"
+description: This guide defines clear, scalable, and maintainable standards for React apps using TypeScript. It builds upon the general TypeScript style guide, emphasizing functional programming and React best practices.
+---
+
+# React TypeScript Style Guide (Index)
+
+This guide is split into focused instruction files. Use the links below for details on each topic.
+
+## Core Principles
+
+→ Use: [Core Principles](react-principles.mdc)
+
+## Component Design & Props
+
+→ Use: [Component Design & Props](react-component-design.mdc)
+
+## Hooks & State Management
+
+→ Use: [Hooks & State Management](react-hooks-state.mdc)
+
+## Functions and Event Handlers
+
+→ Use: [Functions and Event Handlers](react-functions-events.mdc)
+
+## Lazy Loading
+
+→ Use: [Lazy Loading](react-lazy-loading.mdc)
+
+## Performance Practices
+
+→ Use: [Performance Practices](react-performance-practices.mdc)
+
+## Error Handling & Testing
+
+→ Use: [Error Handling & Testing](react-error-testing.mdc)
+
+## Formatting, Imports, and Organization
+
+→ Use: [Formatting, Imports, and Organization](../typescript/typescript-formatting-organization.mdc)
+
+## General TypeScript Guidance
+
+→ Use: [General TypeScript Guidance](../typescript/typescript-styleguide.mdc)
+

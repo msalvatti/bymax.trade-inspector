@@ -1,0 +1,73 @@
+---
+description: Guidelines for writing effective pull request titles and descriptions that focus on user value.
+---
+
+# Pull Request Guidelines
+
+Write PR titles and descriptions that communicate **business value** and **user impact**, not just technical implementation details.
+
+## PR Title Guidelines
+
+### Structure
+```
+type(scope): user-focused outcome description
+```
+
+### Rules
+- **Start with conventional commit type**: `feat:`, `fix:`, `refactor:`, `docs:`, etc.
+- **Focus on outcomes**: What value does this deliver to users/developers?
+- **Keep concise**: Under 60 characters when possible
+- **Use active voice**: "Enable", "Improve", "Add", not "Added" or "Adding"
+- **Avoid technical jargon**: Write for product managers and stakeholders
+
+### Examples
+
+**Good ✅**
+```
+feat: enable real-time collaboration in editor
+fix: improve app startup performance by 40%
+refactor: streamline authentication user experience  
+docs: clarify onboarding process for new contributors
+```
+
+**Avoid ❌**
+```
+feat: add WebSocket connection to ChatProvider
+fix: resolve null pointer exception in auth service
+refactor: extract UserService into separate module
+docs: update README.md with installation steps
+```
+
+## PR Description Guidelines
+
+### Structure
+1. **🎯 Value Delivered** - The "why" and user impact
+2. **📋 Changes Summary** - Key improvements (bullet points)
+3. **📝 Context & Rationale** - Background and problem solved
+4. **🧪 Testing** - Validation approach
+5. **🚀 Deployment Notes** - Any special considerations
+
+### Writing Tips
+- **Lead with value**: Start with user/business benefits
+- **Use metrics**: Include performance improvements, error reduction, etc.
+- **Link context**: Reference Linear tasks, issues, design docs
+- **Be specific**: "Reduces load time by 2s" vs "Improves performance"
+- **Consider audience**: Write for reviewers, future maintainers, and product team
+
+### Template Usage
+Use the repository's `.github/pull_request_template.md` for consistency. The template enforces:
+- Value-first communication
+- Structured information hierarchy
+- Required testing and deployment considerations
+- Compliance checklists
+
+## Quick Reference
+
+| Instead of... | Write... |
+|---------------|----------|
+| "Add user authentication" | "Enable secure user accounts and personalization" |
+| "Fix bug in payment flow" | "Resolve checkout failures affecting 15% of users" |
+| "Refactor database queries" | "Improve app responsiveness with 60% faster data loading" |
+| "Update dependencies" | "Enhance security and reduce bundle size by 12%" |
+
+Remember: Your PR should answer **"What problem does this solve and who benefits?"** before explaining implementation details.

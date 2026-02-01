@@ -1,0 +1,97 @@
+---
+description: React testing guidance using @testing-library.
+---
+
+# React Testing
+
+## Testing Principles
+
+- **TDD/BDD:** Write tests first.
+- Use @testing-library/react for rendering and user events.
+- Test for user interactions, state changes, and UI output.
+- Use mocks for API/side effects.
+
+## Priority guidance
+
+- Component and hook tests should be treated as integration-level tests in our pyramid: useful for verifying UI behavior and wiring, but not considered as vital as unit tests for core services and pure logic.
+- Prioritize unit tests for services, business logic, and pure utilities; write component/hook tests to exercise integrations and user flows.
+- Keep component and hook tests focused, stable, and limited in number — they are higher maintenance and lower priority in the pyramid.
+
+  ```tsx
+  import { render, screen, fireEvent } from "@testing-library/react";
+  import { UserCard } from "./UserCard";
+
+  test("renders user name", () => {
+    render(<UserCard user={{ id: "1", name: "Alice", avatarUrl: "" }} />);
+    expect(screen.getByText("Alice")).toBeInTheDocument();
+  });
+  ```
+
+## Testing Components
+
+- **Test behavior, not implementation details.**
+- **Test user interactions and expected outcomes.**
+- **Mock external dependencies and API calls.**
+- **Test error states and edge cases.**
+
+  - Priority: treat component tests as integration-level — useful to validate wiring and UX flows, but not a substitute for unit tests on services and pure functions.
+
+  ```tsx
+  import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+  import { UserProfile } from "./UserProfile";
+
+  describe("UserProfile", () => {
+    it("displays loading state initially", () => {
+      render(<UserProfile userId="123" />);
+      expect(screen.getByText("Loading...")).toBeInTheDocument();
+    });
+
+    it("displays user data after loading", async () => {
+      render(<UserProfile userId="123" />);
+
+      await waitFor(() => {
+        expect(screen.getByText("John Doe")).toBeInTheDocument();
+      });
+    });
+
+    it("displays error message on failure", async () => {
+      // Mock API failure
+      render(<UserProfile userId="invalid" />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Failed to load user")).toBeInTheDocument();
+      });
+    });
+  });
+  ```
+
+## Testing Hooks
+
+- **Test custom hooks in isolation.**
+- **Use @testing-library/react-hooks for hook testing.**
+- **Test hook return values and state changes.**
+
+  - Priority: treat hook tests as integration-level by default; prefer testing hook-driven behavior via integration tests that include the consuming components and service interactions. Use isolated hook tests sparingly for complex internal state logic.
+
+  ```tsx
+  import { renderHook, act } from "@testing-library/react";
+  import { useCounter } from "./useCounter";
+
+  describe("useCounter", () => {
+    it("initializes with default value", () => {
+      const { result } = renderHook(() => useCounter());
+      expect(result.current.count).toBe(0);
+    });
+
+    it("increments count", () => {
+      const { result } = renderHook(() => useCounter());
+
+      act(() => {
+        result.current.increment();
+      });
+
+      expect(result.current.count).toBe(1);
+    });
+  });
+  ```
+

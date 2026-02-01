@@ -1,0 +1,109 @@
+---
+description: Icon usage guidelines using FontAwesome with semantic colors and consistent sizing. Use when working with icons, UI components, or visual elements. Don't use for business logic, data processing, or backend operations.
+alwaysApply: false
+---
+
+# Icon Usage Guidelines
+
+## Use FontAwesome for all icons with semantic colors
+
+- ALWAYS use `FontAwesome` from `@expo/vector-icons` for all icon needs
+- NEVER use emoji or text-based icons (📅, 🎂, ✅, etc.)
+- Use semantic color classes for icon colors when possible
+- For dynamic colors, extract hex values from CSS custom properties
+- Maintain consistency with icon sizes across the app
+
+```typescript
+// ✅ Correct - Use FontAwesome with semantic colors
+import { FontAwesome } from '@expo/vector-icons';
+
+// For static usage, you can use hex values that match the semantic colors
+<FontAwesome name="calendar-o" size={18} color="#6b7280" /> // text-icon color
+<FontAwesome name="eye" size={20} color="#6b7280" />       // text-icon color
+<FontAwesome name="user" size={24} color="#111827" />      // text-text color
+
+// ❌ Incorrect - Avoid emojis or random colors
+<Text>📅</Text>
+<Text>👤</Text>
+<FontAwesome name="calendar-o" size={18} color="#random" />
+```
+
+## Icon Patterns
+
+- Use consistent sizing: 16px for small, 20px for medium, 24px for large icons
+- Use hex values that match the semantic colors defined in [global.css](mdc:global.css):
+  - `#6b7280` for icon color (text-icon)
+  - `#111827` for primary text color (text-text)
+  - `#2d489a` for primary color
+  - `#ef4444` for error color
+  - `#10b981` for success color
+- Prefer outline versions (-o suffix) for better visual consistency
+- Wrap icons in proper containers with consistent spacing
+
+```typescript
+// ✅ Standard icon component pattern
+const IconComponent = () => (
+  <View className="w-6 h-6 items-center justify-center">
+    <FontAwesome name="icon-name" size={18} color="#6b7280" />
+  </View>
+);
+
+// ✅ Common icon names to use
+- calendar-o (dates)
+- user (profile)
+- eye / eye-slash (password visibility)
+- home (navigation)
+- search (search functionality)
+- plus (add actions)
+- times (close/cancel)
+- check (success/complete)
+- exclamation-triangle (warnings)
+- info-circle (information)
+- birthday-cake (birthday/celebration)
+- trending-up (growth/positive stats)
+```
+
+## Icon Color Guidelines
+
+Use hex values that correspond to semantic colors:
+
+- `#6b7280` for secondary/muted icons (text-icon)
+- `#111827` when icons should match text color (text-text)
+- `#2d489a` for primary/interactive icons (primary)
+- `#ef4444` for error state icons
+- `#10b981` for success state icons
+- `#f59e0b` for warning state icons
+- `#3b82f6` for info state icons
+
+```typescript
+// ✅ Icon color examples with semantic hex values
+<FontAwesome name="calendar-o" size={18} color="#6b7280" />  // Secondary/muted
+<FontAwesome name="check" size={20} color="#10b981" />       // Success
+<FontAwesome name="times" size={18} color="#ef4444" />       // Error
+<FontAwesome name="user" size={24} color="#2d489a" />        // Primary
+```
+
+## Semantic Color Integration
+
+- Icons should use hex values that match the CSS custom properties
+- These values automatically work with the theme system
+- Always use the defined semantic color hex values
+- NEVER use random or arbitrary color values
+
+```typescript
+// ✅ Complete example with proper semantic colors
+import { FontAwesome } from '@expo/vector-icons';
+
+const MyComponent = () => {
+  return (
+    <View className="w-6 h-6 items-center justify-center">
+      <FontAwesome name="calendar-o" size={18} color="#6b7280" />
+    </View>
+  );
+};
+
+// ❌ WRONG - Hardcoded random colors
+<FontAwesome name="calendar-o" size={18} color="#9CA3AF" />
+<FontAwesome name="calendar-o" size={18} color="blue" />
+```
+

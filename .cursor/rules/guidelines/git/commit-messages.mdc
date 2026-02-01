@@ -1,0 +1,66 @@
+---
+description: Guidelines for writing effective commit messages.
+---
+
+# Commit Message Guidelines
+
+Write commit messages that focus on **value delivered** rather than implementation details.
+
+## Structure
+
+### 1. Headline (First Line)
+
+- Start with conventional commit type: `feat:`, `fix:`, `refactor:`, `docs:`, etc.
+- Describe the **outcome** or **benefit**, not the action taken
+- Keep under 50 characters when possible
+
+### 2. Body (Optional)
+
+- Use bullet points for key improvements
+- Focus on:
+  - User benefits
+  - Business value
+  - Developer experience improvements
+  - Performance gains
+  - Problem solved
+
+### 3. Language Guidelines
+
+- Use active voice and action verbs
+- Emphasize impact: enable, enhance, streamline, improve, optimize
+- Avoid technical jargon unless necessary
+- Write for future developers who need to understand **why**, not just **what**
+
+## Examples
+
+### Good ✅
+
+```
+feat: introduce real-time chat for team collaboration
+
+- Enable instant communication between race participants
+- Enhance community engagement with global chat
+- Improve user retention through social features
+```
+
+### Avoid ❌
+
+```
+feat: add chat components
+
+- Added GlobalChat.tsx to Header.tsx
+- Created new migration file for chat_messages table
+- Updated imports in multiple files
+```
+
+## Quick Reference
+
+| Instead of...                     | Write...                               |
+| --------------------------------- | -------------------------------------- |
+| "Updated component imports"       | "Streamline component architecture"    |
+| "Added chat table to database"    | "Enable persistent messaging"          |
+| "Fixed null check in function"    | "Improve application stability"        |
+| "Refactored authentication logic" | "Enhance security and user experience" |
+
+Remember: Your commit message should answer "What value does this bring?" not "What files did I change?"
+

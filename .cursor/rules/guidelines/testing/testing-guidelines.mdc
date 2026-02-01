@@ -1,0 +1,148 @@
+---
+description: Testing Guidelines
+---
+
+# Testing Guidelines
+
+## Purpose
+
+Clear, concise testing rules and the required workflow for this repository. Priorities: the test pyramid, TDD-first development, and a strict, mirrored `__tests__/` layout.
+
+## Requirements (summary)
+
+- Follow the test pyramid (unit → integration → e2e).
+- Use TDD: write unit tests before implementing new behavior.
+- Place all tests under a top-level `__tests__/` folder with `unit/`, `integration/`, `e2e/` subfolders.
+- Mirror `src/` paths inside each test-level folder.
+
+## Test pyramid
+
+- Unit: fast, isolated, deterministic — highest priority.
+- Integration: module/component interactions and infra — medium priority.
+- E2E: full user flows in a running environment — few, high-cost tests.
+
+## TDD workflow (mandatory)
+
+- Red: write a failing unit test that describes the desired behavior.
+- Green: implement the minimal code to make the test pass.
+- Refactor: improve code and tests while keeping the suite green.
+
+### Rules
+
+- Unit tests must be written before implementing new behavior.
+- Tests should fail initially to prove they validate behavior.
+- Commits that implement a feature must include the driving unit test.
+- Unit and integration tests must follow the AAA structure: Arrange (setup), Act (exercise the behavior), Assert (verify results). Keep these phases explicit and separated in each test.
+
+## Test folder layout (enforced)
+
+```text
+/src/...
+/__tests__/
+  /unit/...
+  /integration/...
+  /e2e/...
+```
+
+- `unit/` contains only unit tests; `integration/` contains only integration tests; `e2e/` contains only end-to-end tests.
+- Mirrored-path rule: tests for `src/path/to/x.ts` must appear at the matching path under each level, for example:
+  - `__tests__/unit/path/to/x.test.ts`
+  - `__tests__/integration/path/to/x.test.ts`
+  - `__tests__/e2e/path/to/x.spec.ts` (or `.flow.spec.ts`)
+
+## Naming
+
+- Unit/integration: `*.test.ts`, `*.test.tsx`.
+- E2E: `*.spec.ts`, `*.flow.spec.ts`.
+
+## What to test (short)
+
+- Unit: single function/class in isolation. Example: `src/utils/formatDate.ts` → `__tests__/unit/utils/formatDate.test.ts` (valid, null, locale).
+- Integration: multiple units working together or integration with infra (DB, cache, network). Example: `src/services/auth/login.ts` → `__tests__/integration/services/auth/login.test.ts` (session persisted, error codes).
+- E2E: critical user flows in a running app. Example: login flow → `__tests__/e2e/auth/login.flow.spec.ts` (redirects, error messages).
+
+## React-specific testing
+
+- For React components and hooks follow the repository React testing guide: [React testing guide](react-testing.mdc).
+- The guide provides examples, hook testing patterns, and TDD/BDD guidance for component tests; treat it as the canonical resource for React testing patterns in this repo.
+
+## Enforcement & reviewer checklist
+
+- Unit tests must exist before implementing new behavior; PRs without them will be returned.
+- Tests must live in the correct `__tests__` subfolder and mirror `src/` paths.
+- Unit tests must not perform real network/DB calls; integration tests should declare fixtures and teardown.
+- Reviewers confirm tests are deterministic and cover the behavior.
+- Reviewers must confirm that unit and integration tests follow the AAA pattern (Arrange, Act, Assert) and that the phases are clearly identifiable.
+
+## CI recommendations
+
+- Run unit tests on every PR (fail-fast gate).
+- Run integration tests in CI with test fixtures or mocked infra.
+- Run a small, critical set of E2E tests on release or nightly runs.
+
+## Quality notes
+
+- Tests must be deterministic and isolated; clean state between runs.
+- Keep E2E tests minimal and stable (use reliable selectors and explicit waits).
+- Document any exceptions in the PR and get reviewer approval.
+
+## Examples (AAA-formatted)
+
+Below are minimal examples that demonstrate the AAA pattern (Arrange, Act, Assert). Apply this structure to unit and integration tests.
+
+### Unit (utils) — `__tests__/unit/utils/formatDate.test.ts`
+
+```ts
+// Arrange
+import { formatDate } from "@/src/utils/formatDate";
+const input = new Date("2025-01-02T00:00:00Z");
+
+// Act
+const result = formatDate(input, "en-US");
+
+// Assert
+expect(result).toBe("Jan 2, 2025");
+```
+
+### Integration (service + db) — `__tests__/integration/services/auth/login.test.ts`
+
+```ts
+import { createTestDb, clearDb } from "@/__tests__/utils/db";
+import { login } from "@/src/services/auth/login";
+
+// Arrange
+await createTestDb();
+const credentials = { username: "alice", password: "secret" };
+
+// Act
+const session = await login(credentials);
+
+// Assert
+expect(session.user.username).toBe("alice");
+// verify session persisted in test DB
+const row = await findSessionInDb(session.id);
+expect(row).toBeDefined();
+
+// Teardown (if not handled by fixtures)
+await clearDb();
+```
+
+> React component and hook examples are kept in the React-specific guide: `react-testing.mdc` (do not add React examples here).
+
+## Checklist (review & author)
+
+- [ ] Unit test written before implementation (TDD).
+- [ ] Unit/integration tests follow AAA (Arrange, Act, Assert) and phases are clear.
+- [ ] Tests placed under the correct `__tests__` subfolder and mirror `src/`.
+- [ ] Unit tests do not call real network/DB; integration tests declare fixtures and teardown.
+- [ ] PR CI shows unit tests green before merge.
+
+## Requirements coverage
+
+- Pyramid: Done
+- TDD enforced: Done
+- `__tests__` layout + mirrored paths: Done
+- Unit tests before implementation (TDD-first): Done
+
+Maintainer: docs/testing guidelines
+
