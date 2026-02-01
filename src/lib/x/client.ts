@@ -1,5 +1,33 @@
 import { getEnv, getEnvForX, type EnvOverrides } from '@/lib/env/env'
-import type { XSearchResponse, XUsageResponse } from '@/lib/x/types'
+import type { XApiErrorBody, XSearchResponse, XUsageResponse } from '@/lib/x/types'
+
+/**
+ * Parses X API error response and returns a user-friendly message.
+ * Handles 402 CreditsDepleted, 429 rate limit, 401/403 auth, and generic errors.
+ */
+function parseXApiErrorMessage(status: number, body: string): string {
+  let parsed: XApiErrorBody | null = null
+  try {
+    parsed = JSON.parse(body) as XApiErrorBody
+  } catch {
+    return body || `X API error ${status}`
+  }
+  const title = parsed?.title ?? ''
+  const detail = parsed?.detail ?? ''
+
+  if (status === 402 && (title === 'CreditsDepleted' || detail.toLowerCase().includes('credits'))) {
+    return 'X API: Your account has no credits left. Add credits in the X Developer Portal (developer.x.com) to use the API.'
+  }
+  if (status === 429) {
+    return 'X API: Rate limit exceeded. Try again later.'
+  }
+  if (status === 401 || status === 403) {
+    return 'X API: Invalid or expired credentials. Check your X Bearer Token in Settings or .env.local.'
+  }
+  if (detail) return `X API: ${detail}`
+  if (title) return `X API: ${title}`
+  return body || `X API error ${status}`
+}
 
 const MAX_RETRIES = 1
 const INITIAL_BACKOFF_MS = 1000
@@ -48,7 +76,7 @@ export async function searchRecent(
 
   if (!res.ok) {
     const body = await res.text()
-    throw new Error(`X API error ${res.status}: ${body || res.statusText}`)
+    throw new Error(parseXApiErrorMessage(res.status, body || res.statusText))
   }
 
   return res.json() as Promise<XSearchResponse>
@@ -74,7 +102,7 @@ export async function fetchUsageData(overrides?: EnvOverrides): Promise<XUsageRe
 
   if (!res.ok) {
     const body = await res.text()
-    throw new Error(`X usage API error ${res.status}: ${body || res.statusText}`)
+    throw new Error(parseXApiErrorMessage(res.status, body || res.statusText))
   }
 
   return res.json() as Promise<XUsageResponse>

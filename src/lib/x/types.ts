@@ -43,6 +43,17 @@ export interface NormalizedPost {
   engagement_score: number
 }
 
+/**
+ * X API v2 error body (e.g. 402 CreditsDepleted, 429 rate limit).
+ * See https://developer.x.com/en/docs/twitter-api/rate-limits
+ */
+export interface XApiErrorBody {
+  title?: string
+  detail?: string
+  type?: string
+  account_id?: number
+}
+
 /** Response from GET /2/usage/tweets */
 export interface XUsageResponse {
   data?: {
