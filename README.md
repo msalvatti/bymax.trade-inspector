@@ -69,7 +69,7 @@ The list shows the **top posts** fetched from X.com, sorted newest first. Posts 
 
 You can run the app in two ways:
 
-1. **Environment variables** — Set `X_BEARER_TOKEN` and `OPENAI_API_KEY` in `.env.local` (or Vercel env). The server uses these for every request. No keys are sent from the browser.
+1. **Environment variables** — Set `X_BEARER_TOKEN` and `OPENAI_API_KEY` in `.env.local` (or Vercel env). The server uses these for every request. No keys are sent from the browser. **If env keys are set, the app uses them by default:** the **API keys** settings panel is not shown when you submit the form; it only appears when neither env nor session keys are available.
 2. **API keys in the browser** — Click **API keys** on the dashboard. Enter your **X.com Bearer Token** and **OpenAI API Key**, then **Save (session only)**. They are stored only in your browser’s **session storage** and sent with each analysis request over HTTPS. They are **not** stored on our servers. Use **Clear keys** to remove them; the form inputs are cleared and the usage card hides until keys are set again.
 
 ![API keys (Settings)](public/img/settings.png)
@@ -214,15 +214,19 @@ If you don’t set env vars, visitors can still use the app by opening **API key
 │   │       ├── TradeForm.tsx    # Request form, BUY/SELL, filters, API keys panel
 │   │       ├── ResultCard.tsx   # Decision, bias, confidence, reason
 │   │       ├── UsageCard.tsx    # X API usage (credit, used, remaining)
-│   │       └── PostsList.tsx    # Top posts, robot icon for AI-used
+│   │       ├── PostsList.tsx    # Top posts, robot icon for AI-used
+│   │       └── Footer.tsx       # Footer
 │   └── lib/
 │       ├── analysisFormSchema.ts # Shared Zod schema for analysis form (client + server)
 │       ├── env/                  # Zod-validated env loader, optional overrides
 │       ├── x/                    # X API client, query builder, search, usage
 │       ├── ai/                   # OpenAI client, prompt, schema, analyze (gpt-4o + temp 0)
 │       └── analysis/             # Post scoring, dedup, top-N selection
+├── docs/
+│   └── REQUIREMENTS.md          # Full product and technical requirements
 ├── public/
 │   └── img/                     # Screenshots: form.png, results.png, posts.png
+├── AGENTS.md                    # Guidelines for AI agents (Next.js, RHF, Zod, Tailwind, etc.)
 ├── .env.local.example
 ├── next.config.ts
 ├── package.json
@@ -234,6 +238,21 @@ If you don’t set env vars, visitors can still use the app by opening **API key
 - **lib/x** — X API v2 Recent Search + `GET /2/usage/tweets`; query building; response mapping.
 - **lib/ai** — OpenAI chat completion (JSON); Zod schema; prompt with bias/recommendation rules; gpt-4o with temperature 0 when applicable.
 - **lib/analysis** — Engagement, recency, author, spam; dedup; top 50 with author diversity.
+
+---
+
+## 🤖 For AI agents and contributors
+
+The project includes **[AGENTS.md](AGENTS.md)** with detailed guidelines for AI agents and contributors:
+
+- **Next.js** — Server-first; when to use Server Components vs Client Components; Server Actions and validation.
+- **APIs** — All X and OpenAI calls server-side; env and optional form overrides; error handling.
+- **React Hook Form + Zod** — Single shared schema (`src/lib/analysisFormSchema.ts`) for client and server; no duplicate validation.
+- **Tailwind** — Palette (zinc, emerald, rose, amber, sky), spacing with `gap-*`, and consistent sections.
+- **TypeScript & React** — Named components, no `any`, strict types, one main component per file.
+- **Comments and UI text** — All in English; comment non-obvious logic; user-facing strings in English.
+
+Use **AGENTS.md** as the main reference when implementing or refactoring; see **docs/REQUIREMENTS.md** for full product and technical requirements.
 
 ---
 
@@ -260,4 +279,4 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 
 ---
 
-**Bymax Trade Inspector** — Market sentiment from X.com + AI. Informational only.
+**Bymax Trade Inspector** — Market sentiment from X.com + AI. Informational only. Made with ♥ and a lot of love for building.
