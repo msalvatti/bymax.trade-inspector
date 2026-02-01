@@ -279,4 +279,6 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 
 ---
 
-**Bymax Trade Inspector** — Market sentiment from X.com + AI. Informational only. Made with ♥ and a lot of love for building.
+**Bymax Trade Inspector** — Market sentiment from X.com + AI. Informational only.
+
+Made with ♥ and a lot of love for building.
