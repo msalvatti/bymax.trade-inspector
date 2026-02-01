@@ -12,13 +12,9 @@ export function Footer() {
 
   return (
     <footer className="mt-auto bg-zinc-950 px-4 py-6">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-6">
-        <div className="shrink-0 overflow-hidden rounded-xl">
-          <img
-            src="/logo.png"
-            alt="Bymax Trade Inspector"
-            className="h-16 w-auto object-contain sm:h-20 md:h-32"
-          />
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center">
+        <div className="flex w-full shrink-0 justify-center overflow-hidden rounded-xl">
+          <img src="/logo.png" alt="Bymax Trade Inspector" className="h-32 w-auto object-contain" />
         </div>
         <div className="flex min-w-0 flex-1 basis-full flex-col items-center justify-center text-center sm:basis-auto">
           <p className="text-sm text-zinc-500">
