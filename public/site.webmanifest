@@ -1,0 +1,23 @@
+{
+  "name": "Bymax Trade Inspector",
+  "short_name": "Trade Inspector",
+  "description": "Crypto market sentiment analysis from X.com posts and AI. Informational only, not financial advice.",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#18181b",
+  "background_color": "#09090b",
+  "icons": [
+    {
+      "src": "/favicons/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/favicons/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ]
+}

@@ -56,6 +56,20 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: 'Bymax Trade Inspector' }],
   creator: 'Bymax Trade Inspector',
+  icons: {
+    icon: [
+      { url: '/favicons/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicons/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicons/favicon-48x48.png', sizes: '48x48', type: 'image/png' },
+      { url: '/favicons/favicon-96x96.png', sizes: '96x96', type: 'image/png' }
+    ],
+    apple: [
+      { url: '/favicons/apple-touch-icon-180x180.png', sizes: '180x180', type: 'image/png' }
+    ],
+    other: [
+      { rel: 'mask-icon', url: '/favicons/android-chrome-192x192.png', color: '#000000' }
+    ]
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
@@ -250,6 +264,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="manifest" href="/site.webmanifest" />
+        <meta name="theme-color" content="#18181b" />
+        <meta name="msapplication-config" content="/browserconfig.xml" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-title" content="Trade Inspector" />
         <JsonLdScripts />
       </head>
       <body className="flex min-h-screen flex-col bg-zinc-950 text-zinc-100 antialiased">

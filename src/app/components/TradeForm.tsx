@@ -150,7 +150,7 @@ export function Dashboard() {
   return (
     <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-12">
       <header className="mb-8 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-100 sm:text-3xl">
+        <h1 className="mt-3 text-2xl font-semibold tracking-tight text-zinc-100 sm:text-3xl">
           Bymax Trade Inspector
         </h1>
         <p className="mt-1 text-sm text-zinc-400">
