@@ -122,7 +122,6 @@ Create `.env.local.example` (commit this file; do not add it to .gitignore). It 
 - X_BEARER_TOKEN (required, X.com API Bearer Token)
 - OPENAI_API_KEY (required, OpenAI API key)
 - Optionally X_API_BASE_URL, default [https://api.x.com](https://api.x.com)
-- Optionally OPENAI_BASE_URL, default [https://api.openai.com](https://api.openai.com)
 
 Never prefix with NEXT_PUBLIC. Developers copy this file to `.env.local` and fill in values locally; `.env` and `.env.local` must remain in .gitignore.
 
