@@ -4,7 +4,7 @@
   "description": "Market sentiment analysis from X.com posts and AI. Bymax Trade Inspector — informational tool for crypto/token sentiment, not financial advice.",
   "private": false,
   "license": "MIT",
-  "author": "Bymax",
+  "author": "Bymax One",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/msalvatti/bymax.trade-inspector.git"
