@@ -132,8 +132,8 @@ The dashboard (form, result, posts) is a **Client Component** that calls these a
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/bymax/bymax-trade-inspector.git
-   cd bymax-trade-inspector
+   git clone https://github.com/msalvatti/bymax.trade-inspector.git
+   cd bymax.trade-inspector
    ```
 
 2. **Install dependencies**
