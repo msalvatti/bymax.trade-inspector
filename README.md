@@ -96,11 +96,11 @@ This project is built on **Next.js App Router** and uses **server-side features*
 
 ### What runs on the server
 
-| Piece                                            | Role                                                                                                                                                |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Server Actions** (`src/app/actions.ts`)        | All X.com and OpenAI calls run here. The client never receives API keys or raw API responses.                                                       |
-| **Server Components** (`layout.tsx`, `page.tsx`) | The root layout and the home page are Server Components: they render on the server and send HTML. Metadata (title, description) is set server-side. |
-| **Node.js runtime**                              | The app uses the Node.js runtime (`runtime = "nodejs"` on the page) so Server Actions can call external APIs with env vars.                         |
+| Piece                                            | Role                                                                                                                                                                                                                                                                      |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Server Actions** (`src/app/actions.ts`)        | All X.com and OpenAI calls run here. The server never returns API keys or raw API responses. When keys are provided via the browser (session), the user types them in; they are only sent to the server in the request body over HTTPS and are not persisted server-side. |
+| **Server Components** (`layout.tsx`, `page.tsx`) | The root layout and the home page are Server Components: they render on the server and send HTML. Metadata (title, description) is set server-side.                                                                                                                       |
+| **Node.js runtime**                              | The app uses the Node.js runtime (`runtime = "nodejs"` on the page) so Server Actions can call external APIs with env vars.                                                                                                                                               |
 
 ### Server Actions in this project
 
@@ -111,7 +111,7 @@ The dashboard (form, result, posts) is a **Client Component** that calls these a
 
 ### Why this adds value
 
-- **Security** — X Bearer Token and OpenAI API key are used only inside Server Actions. They are never bundled or exposed to the browser; at most, the user sends them over HTTPS in the request body, and the server uses them without persisting.
+- **Security** — X Bearer Token and OpenAI API key are used only inside Server Actions. Env-based keys never reach the browser. When the user provides keys via the API keys panel, they are stored only in session storage and sent over HTTPS in the request body; the server uses them without persisting and never returns them in responses.
 - **Simplicity** — No separate API layer: the same Next.js app handles UI and “backend”. One deployment, one codebase.
 - **Progressive enhancement** — The form can submit via Server Action; if needed, the same action can be invoked from other clients later.
 - **Control** — Rate limits, validation, and error handling live on the server; the client only displays loading state and results.
